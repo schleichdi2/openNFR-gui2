@@ -2416,8 +2416,6 @@ class InfoBarExtensions:
 
 	def addExtension(self, extension, key = None, type = EXTENSION_SINGLE):
 		self.list.append((type, extension, key))
-		if config.usage.sort_extensionslist.value:
-			self.list.sort()
 
 	def updateExtension(self, extension, key = None):
 		self.extensionsList.append(extension)
@@ -2451,29 +2449,21 @@ class InfoBarExtensions:
 		extensionsList = self.extensionsList[:]
 		keys = []
 		list = []
-		colorlist = []
 		for x in self.availableKeys:
 			if x in self.extensionKeys:
 				entry = self.extensionKeys[x]
 				extension = self.extensionsList[entry]
 				if extension[2]():
 					name = str(extension[0]())
-					if self.availableKeys.index(x) < 10:
-						list.append((extension[0](), extension))
-					else:
-						colorlist.append((extension[0](), extension))
+					list.append((extension[0](), extension))
 					keys.append(x)
 					extensionsList.remove(extension)
 				else:
 					extensionsList.remove(extension)
-		if config.usage.sort_extensionslist.value:
-			list.sort()
-		for x in colorlist:
-			list.append(x)
 		list.extend([(x[0](), x) for x in extensionsList])
 
 		keys += [""] * len(extensionsList)
-		self.session.openWithCallback(self.extensionCallback, ChoiceBox, title=_("Please choose an extension..."), list = list, keys = keys, skin_name = "ExtensionsList")
+		self.session.openWithCallback(self.extensionCallback, ChoiceBox, title=_("Please choose an extension..."), list = list, keys = keys, skin_name = "ExtensionsList", reorderConfig="extension_order")
 
 	def extensionCallback(self, answer):
 		if answer is not None:

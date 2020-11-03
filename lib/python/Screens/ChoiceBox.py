@@ -15,11 +15,14 @@ config.misc.pluginlist.eventinfo_order = ConfigText(default="")
 config.misc.pluginlist.extension_order = ConfigText(default="")
 config.misc.pluginlist.fc_bookmarks_order = ConfigText(default="")
 
+
+
 class ChoiceBox(Screen):
 	def __init__(self, session, title="", list=None, keys=None, selection=0, skin_name=None, text="", reorderConfig="", var="", windowTitle = None, allow_cancel = True, titlebartext = _("Choice Box")):
+		list1 = list
 		if not windowTitle: #for compatibility
 			windowTitle = titlebartext
-		if not list: list = []
+		if not list1: list1 = []
 		if not skin_name: skin_name = []
 		Screen.__init__(self, session)
 
@@ -71,22 +74,28 @@ class ChoiceBox(Screen):
 		if keys is None:
 			self.__keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "red", "green", "yellow", "blue", "text"] + (len(list) - 14) * [""]
 		else:
-			self.__keys = keys + (len(list) - len(keys)) * [""]
+			self.__keys = keys + (len(list1) - len(keys)) * [""]
 
 		self.keymap = {}
 		pos = 0
 		if self.reorderConfig:
 			self.config_type = eval("config.misc.pluginlist." + self.reorderConfig)
 			if self.config_type.value:
-				prev_list = zip(list, self.__keys)
+				prev_list1 = zip(list1, self.__keys)
+				prev_list = []
+				for zip1 in prev_list1:
+					prev_list.append(zip1)
 				new_list = []
 				for x in self.config_type.value.split(","):
 					for entry in prev_list:
 						if entry[0][0] == x:
 							new_list.append(entry)
 							prev_list.remove(entry)
-				list = zip(*(new_list + prev_list))
-				list, self.__keys = list[0], list[1]
+				list3 = zip(*(new_list + prev_list))
+				list2 = []
+				for zip2 in list3:
+					list2.append(zip2)
+				list1, self.__keys = list2[0], list2[1]
 				number = 1
 				new_keys = []
 				for x in self.__keys:
@@ -96,11 +105,11 @@ class ChoiceBox(Screen):
 					else:
 						new_keys.append(not x.isdigit() and x or "")
 				self.__keys = new_keys
-		for x in list:
+		for x in list1:
 			strpos = str(self.__keys[pos])
 			self.list.append(ChoiceEntryComponent(key=strpos, text=x))
 			if self.__keys[pos] != "":
-				self.keymap[self.__keys[pos]] = list[pos]
+				self.keymap[self.__keys[pos]] = list1[pos]
 			self.summarylist.append((self.__keys[pos], x[0]))
 			pos += 1
 		self["windowtitle"] = Label(_(windowTitle))
@@ -336,3 +345,4 @@ class ChoiceBox(Screen):
 				self["list"].up()
 			self.config_type.value = ",".join(x[0][0] for x in self.list)
 			self.config_type.save()
+
